@@ -16,7 +16,7 @@ public class JunitTests {
 
     @BeforeEach
     @DisplayName("Добавим красок")
-    public void separator() {
+    public void colorChange() {
         System.out.print(colors[k]);
         k++;
     }
@@ -32,9 +32,7 @@ public class JunitTests {
     @Test
     @DisplayName("Тест исключения модуля 'factorial' для отрицательного числа")
     public void factorialExceptionTest() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            factorial(-6);
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> factorial(-6));
     }
 
     // Площадь
@@ -42,6 +40,7 @@ public class JunitTests {
     @DisplayName("Тест модуля 'square'")
     public void squareTest() {
         Assertions.assertEquals(2.9, square(2, 3, 4), 0.01);
+        System.out.print("\n\n" + square(2, 3, 4));
     }
 
     // Арифметика
@@ -61,9 +60,7 @@ public class JunitTests {
     @Test
     @DisplayName("Тест исключения модуля 'arithmetic' при не верном указании арифметической операции")
     public void arithmeticExceptionTest() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            arithmetic(4, "aaa", 2);
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> arithmetic(4, "aaa", 2));
     }
 
     // Сравнение

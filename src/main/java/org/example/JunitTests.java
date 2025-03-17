@@ -1,22 +1,8 @@
 package org.example;
 
 public class JunitTests {
-    public static void main(String[] args) {
-        System.out.println("\n" + factorial(5));
 
-        System.out.println("\n" + square(2, 3, 4));
-
-        try {
-            System.out.println("\n" + arithmetic(2, "/", 0));
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
-
-        compare(5, 2);
-    }
-
-    public static String[] colors = {"\u001B[31m", "\u001B[32m", "\u001B[33m", "\u001B[34m", "\u001B[37m", "\u001B[35m", "\u001B[31m", "\u001B[32m", "\u001B[32m", "\u001B[33m", "\u001B[34m", "\u001B[37m", "\u001B[35m"};
-
+    public static String[] colors = {"\u001B[31m", "\u001B[32m", "\u001B[33m", "\u001B[34m", "\u001B[37m", "\u001B[35m", "\u001B[31m", "\u001B[32m", "\u001B[33m", "\u001B[34m", "\u001B[37m", "\u001B[35m"};
 
     public static int factorial(int f) {
         if (f >= 0) {
