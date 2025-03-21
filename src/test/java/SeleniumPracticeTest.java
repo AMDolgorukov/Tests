@@ -31,14 +31,14 @@ public class SeleniumPracticeTest {
     }
 
     @Test
-    @DisplayName("Названия блока «Онлайн пополнение без комиссии»")
+    @DisplayName("Проверка названия блока «Онлайн пополнение без комиссии»")
     public void titleBlockTest() {
         WebElement payWrapper = driver.findElement(By.xpath("//*[@class='pay__wrapper']/h2"));
         Assertions.assertEquals("Онлайн пополнение\n" + "без комиссии", payWrapper.getText());
     }
 
     @Test
-    @DisplayName("Логотипы платежных систем")
+    @DisplayName("Проверка наличия логотипов платежных систем")
     public void payPartnersLogoTest() {
         Assertions.assertAll(
                 () -> Assertions.assertFalse(driver.findElements(By.cssSelector("img[alt='Visa']")).isEmpty()),
@@ -50,7 +50,7 @@ public class SeleniumPracticeTest {
     }
 
     @Test
-    @DisplayName("Работа ссылки «Подробнее о сервисе»")
+    @DisplayName("Проверка работы ссылки «Подробнее о сервисе»")
     public void serviceInfoLinkTest() {
         WebElement serviceInfo = driver.findElement(By.xpath("//*[@class='pay__wrapper']/a"));
         Assertions.assertAll(
@@ -62,7 +62,7 @@ public class SeleniumPracticeTest {
     }
 
     @Test
-    @DisplayName("Работа кнопки «Продолжить»")
+    @DisplayName("Проверка работы кнопки «Продолжить»")
     public void continueBtnTest() {
         WebElement continueBtn = driver.findElement(By.xpath("//*[@id='pay-connection']/button"));
         WebElement phoneField = driver.findElement(By.id("connection-phone"));
