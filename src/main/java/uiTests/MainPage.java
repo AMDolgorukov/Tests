@@ -13,8 +13,23 @@ public class MainPage {
     public By belcardImg = By.cssSelector("img[alt='Белкарт']");
     public By serviceInfo = By.xpath("//*[@class='pay__wrapper']/a");
     public By continueBtn = By.xpath("//*[@id='pay-connection']/button");
-    public By phoneField = By.id("connection-phone");
-    public By sumField = By.id("connection-sum");
+
+    public By connectPhone = By.id("connection-phone");
+    public By connectSum = By.id("connection-sum");
+    public By internetPhone = By.id("internet-phone");
+    public By internetSum = By.id("internet-sum");
+    public By scoreInstalment = By.id("score-instalment");
+    public By sumInstalment = By.id("instalment-sum");
+    public By scoreArrears = By.id("score-arrears");
+    public By sumArrears = By.id("arrears-sum");
+    public By selectHeader = By.className("select__header");
+    public By selectList = By.className("select__list");
+
+    // можно попробывать list
+    public By selectItem_1 = By.xpath("//*[@class='select__list']/li[1]");
+    public By selectItem_2 = By.xpath("//*[@class='select__list']/li[2]");
+    public By selectItem_3 = By.xpath("//*[@class='select__list']/li[3]");
+    public By selectItem_4 = By.xpath("//*[@class='select__list']/li[4]");
 
     private WebDriver driver;
 
@@ -34,13 +49,13 @@ public class MainPage {
         return driver.findElement(serviceInfo);
     }
 
-    public void payWrapperData(){
-        WebElement phone = driver.findElement(phoneField);
-        WebElement sum = driver.findElement(sumField);
-        phone.click();
-        phone.sendKeys("297777777");
-        sum.click();
-        sum.sendKeys("1");
+    public void payWrapperData(String phone, String sum){
+        WebElement phoneField = driver.findElement(connectPhone);
+        WebElement sumField = driver.findElement(connectSum);
+        phoneField.click();
+        phoneField.sendKeys(phone);
+        sumField.click();
+        sumField.sendKeys(sum);
     }
 
 //    public String getText(WebElement webElement){
