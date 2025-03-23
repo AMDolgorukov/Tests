@@ -1,5 +1,6 @@
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -9,6 +10,7 @@ import uiTests.BePaidApp;
 import uiTests.CookieFrame;
 import uiTests.MainPage;
 
+import java.text.DecimalFormat;
 import java.time.Duration;
 
 public class SeleniumPracticeTest {
@@ -33,7 +35,7 @@ public class SeleniumPracticeTest {
         bePaidApp = new BePaidApp(driver);
 //        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 //        try {
-//            wait.until(ExpectedConditions.elementToBeClickable(cookieFrame.cookieBtn)).click();
+//            wait.until(ExpectedConditions.elementToBeClickable(By.id("cookie-agree"))).click();
 //        } catch (TimeoutException ignored) {
 //        }
         CookieFrame cookieFrame = new CookieFrame(driver);
@@ -79,7 +81,7 @@ public class SeleniumPracticeTest {
     @Test
     @DisplayName("Проверка работы кнопки «Продолжить»")
     public void continueBtnTest() {
-        mainPage.payWrapperData("297777777","1");
+        mainPage.payWrapperData("297777777", 1.0);
         Assertions.assertAll(
                 () -> Assertions.assertEquals("Продолжить", driver.findElement(mainPage.continueBtn).getText()),
                 driver.findElement(mainPage.continueBtn)::click,
@@ -120,19 +122,31 @@ public class SeleniumPracticeTest {
     @Test
     @DisplayName("Проверка окна подтверждения платежа")
     public void bePaidFrameTest() {
-//        String sum = "1";
-//        String phone ="297777777";
-//        mainPage.payWrapperData(phone,sum);
-//        driver.findElement(mainPage.continueBtn).click();
-//        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        Double sum = 1.0;
+        String sumDouble = new DecimalFormat("#0.00").format(sum);
+        String phone = "297777777";
+        mainPage.payWrapperData(phone, sum);
+
+        driver.findElement(mainPage.continueBtn).click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
 //        wait.until(ExpectedConditions.visibilityOfElementLocated(bePaidApp.bePaidFrame)).isEnabled();
-//        driver.switchTo().frame(driver.findElement(bePaidApp.bePaidFrame));
-////        System.out.println(driver.findElement(bePaidApp.payDescriptionText).getAttribute());
-//        System.out.println(driver.findElement(bePaidApp.cardNumber).getText());
+        wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.className("bepaid-iframe")));
+//        driver.switchTo().frame(driver.findElement(By.className("bepaid-iframe")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(bePaidApp.payDescriptionText));
+        Assertions.assertEquals("Оплата: Услуги связи Номер:375" + phone, driver.findElement(bePaidApp.payDescriptionText).getText()); //номер оплаты
+        Assertions.assertEquals(sumDouble.replace(",",".")+" BYN",driver.findElement(bePaidApp.payDescriptionCost).getText()); //сумма сверху фрейма
+        Assertions.assertEquals("Оплатить "+sumDouble.replace(",",".")+" BYN",driver.findElement(bePaidApp.payBtn).getText()); //кнопка оплатить
+        Assertions.assertEquals("Номер карты",driver.findElement(bePaidApp.cardNumber).getText()); //номер карты
+        Assertions.assertEquals("Срок действия",driver.findElement(bePaidApp.validityPeriod).getText()); //срок действия
+        Assertions.assertEquals("Имя держателя (как на карте)",driver.findElement(bePaidApp.cardholderName).getText());//фамилия
+        Assertions.assertEquals("CVC",driver.findElement(bePaidApp.cvc).getText()); //CVC
+
+        Assertions.assertTrue(bePaidApp.payPartnersLogo()); //логотипы платёжных систем
     }
 
-//    @AfterEach
-//    void driverClose() {
-//        driver.close();
-//    }
+    @AfterEach
+    void driverClose() {
+        driver.close();
+    }
 }

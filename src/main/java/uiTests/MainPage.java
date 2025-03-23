@@ -42,20 +42,24 @@ public class MainPage {
     }
 
     public boolean payPartnersLogo(){
-        return !driver.findElements(visaImg).isEmpty()&&!driver.findElements(verifiedByVisaImg).isEmpty()&&!driver.findElements(masterCardImg).isEmpty()&&!driver.findElements(masterCardSecureCodeImg).isEmpty()&&!driver.findElements(belcardImg).isEmpty();
+        return !driver.findElements(visaImg).isEmpty()
+                &&!driver.findElements(verifiedByVisaImg).isEmpty()
+                &&!driver.findElements(masterCardImg).isEmpty()
+                &&!driver.findElements(masterCardSecureCodeImg).isEmpty()
+                &&!driver.findElements(belcardImg).isEmpty();
     }
 
     public WebElement serviceInfo(){
         return driver.findElement(serviceInfo);
     }
 
-    public void payWrapperData(String phone, String sum){
+    public void payWrapperData(String phone, Double sum){
         WebElement phoneField = driver.findElement(connectPhone);
         WebElement sumField = driver.findElement(connectSum);
         phoneField.click();
         phoneField.sendKeys(phone);
         sumField.click();
-        sumField.sendKeys(sum);
+        sumField.sendKeys(sum.toString());
     }
 
 //    public String getText(WebElement webElement){
