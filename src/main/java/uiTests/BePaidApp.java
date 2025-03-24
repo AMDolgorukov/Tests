@@ -18,18 +18,17 @@ public class BePaidApp {
     public By maestroImg = By.xpath("//*[@class='cards-brands ng-tns-c2312288139-1']/div/div/img[1]");
     public By mirImg = By.xpath("//*[@class='cards-brands ng-tns-c2312288139-1']/div/div/img[2]");
 
-
     private WebDriver driver;
 
-    public BePaidApp(WebDriver driver){
+    public BePaidApp(WebDriver driver) {
         this.driver = driver;
     }
 
-    public boolean payPartnersLogo(){
+    public boolean payPartnersLogo() {
         return !driver.findElements(visaImg).isEmpty()
-                &&!driver.findElements(maestroImg).isEmpty()
-                &&!driver.findElements(masterCardImg).isEmpty()
-                &&!driver.findElements(mirImg).isEmpty()
-                &&!driver.findElements(belcardImg).isEmpty();
+                && !driver.findElements(maestroImg).isEmpty()
+                && !driver.findElements(masterCardImg).isEmpty()
+                && !driver.findElements(mirImg).isEmpty()
+                && !driver.findElements(belcardImg).isEmpty();
     }
 }

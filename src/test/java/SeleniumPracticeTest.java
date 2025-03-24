@@ -2,7 +2,6 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -19,8 +18,6 @@ public class SeleniumPracticeTest {
 
     MainPage mainPage;
     BePaidApp bePaidApp;
-//    MainPage mainPage = new MainPage(driver);
-
 
     @BeforeAll
     static void driverSetup() {
@@ -33,11 +30,6 @@ public class SeleniumPracticeTest {
         driver.get("http://mts.by");
         mainPage = new MainPage(driver);
         bePaidApp = new BePaidApp(driver);
-//        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
-//        try {
-//            wait.until(ExpectedConditions.elementToBeClickable(By.id("cookie-agree"))).click();
-//        } catch (TimeoutException ignored) {
-//        }
         CookieFrame cookieFrame = new CookieFrame(driver);
         cookieFrame.cookieAgree();
     }
@@ -45,35 +37,23 @@ public class SeleniumPracticeTest {
     @Test
     @DisplayName("Проверка названия блока «Онлайн пополнение без комиссии»")
     public void titleBlockTest() {
-//        MainPage mainPage = new MainPage(driver);
-//        WebElement payWrapper = driver.findElement(By.xpath("//*[@class='pay__wrapper']/h2"));
-//        Assertions.assertEquals("Онлайн пополнение\n" + "без комиссии", payWrapper.getText());
-        Assertions.assertEquals("Онлайн пополнение\n" + "без комиссии", mainPage.getPayWrapperName());
+//        Assertions.assertEquals("Онлайн пополнение\n" + "без комиссии", mainPage.getPayWrapperName());
+        Assertions.assertEquals("Онлайн пополнение\n" + "без комиссии", mainPage.getText(mainPage.payWrapperName));
     }
 
     @Test
     @DisplayName("Проверка наличия логотипов платежных систем")
     public void payPartnersLogoTest() {
-//        MainPage mainPage = new MainPage(driver);
-//        Assertions.assertAll(
-//                () -> Assertions.assertFalse(driver.findElements(mainPage.visaImg).isEmpty()),
-//                () -> Assertions.assertFalse(driver.findElements(mainPage.verifiedByVisaImg).isEmpty()),
-//                () -> Assertions.assertFalse(driver.findElements(mainPage.masterCardImg).isEmpty()),
-//                () -> Assertions.assertFalse(driver.findElements(mainPage.masterCardSecureCodeImg).isEmpty()),
-//                () -> Assertions.assertFalse(driver.findElements(mainPage.belcardImg).isEmpty())
-//        );
         Assertions.assertTrue(mainPage.payPartnersLogo());
     }
 
     @Test
     @DisplayName("Проверка работы ссылки «Подробнее о сервисе»")
     public void serviceInfoLinkTest() {
-//        WebElement serviceInfo = driver.findElement(mainPage.serviceInfo);
-        WebElement serviceInfo = mainPage.serviceInfo();
         Assertions.assertAll(
-                () -> Assertions.assertEquals("Подробнее о сервисе", serviceInfo.getText()),
-                () -> Assertions.assertEquals("https://www.mts.by/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/", serviceInfo.getAttribute("href")),
-                serviceInfo::click,
+                () -> Assertions.assertEquals("Подробнее о сервисе", mainPage.getText(mainPage.serviceInfo)),
+                () -> Assertions.assertEquals("https://www.mts.by/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/", driver.findElement(mainPage.serviceInfo).getAttribute("href")),
+                driver.findElement(mainPage.serviceInfo)::click,
                 () -> Assertions.assertTrue(new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.urlContains("https://www.mts.by/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/")))
         );
     }
@@ -81,68 +61,57 @@ public class SeleniumPracticeTest {
     @Test
     @DisplayName("Проверка работы кнопки «Продолжить»")
     public void continueBtnTest() {
+        mainPage.paymentOptionsSelect(new WebDriverWait(driver, Duration.ofSeconds(3)), 0);
         mainPage.payWrapperData("297777777", 1.0);
         Assertions.assertAll(
-                () -> Assertions.assertEquals("Продолжить", driver.findElement(mainPage.continueBtn).getText()),
+                () -> Assertions.assertEquals("Продолжить", mainPage.getText(mainPage.continueBtn)),
                 driver.findElement(mainPage.continueBtn)::click,
                 () -> Assertions.assertTrue(new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.visibilityOfElementLocated(bePaidApp.bePaidFrame)).isEnabled())
         );
     }
 
     @Test
-    @DisplayName("Список услуг для оплаты онлайн")
+    @DisplayName("Проверка списка услуг для оплаты онлайн")
     public void selectListTest() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
-
-        // Услуги связи
-        wait.until(ExpectedConditions.elementToBeClickable(mainPage.selectHeader)).click();
-        wait.until(ExpectedConditions.elementToBeClickable(mainPage.selectItem_1)).click();
+        mainPage.paymentOptionsSelect(wait, 0);
         Assertions.assertEquals("Номер телефона", driver.findElement(mainPage.connectPhone).getAttribute("placeholder"));
         Assertions.assertEquals("Сумма", driver.findElement(mainPage.connectSum).getAttribute("placeholder"));
-
-        // Домашний интернет
-        wait.until(ExpectedConditions.elementToBeClickable(mainPage.selectHeader)).click();
-        wait.until(ExpectedConditions.elementToBeClickable(mainPage.selectItem_2)).click();
+        Assertions.assertEquals("E-mail для отправки чека", driver.findElement(mainPage.eMailField).getAttribute("placeholder"));
+        mainPage.paymentOptionsSelect(wait, 1);
         Assertions.assertEquals("Номер абонента", driver.findElement(mainPage.internetPhone).getAttribute("placeholder"));
         Assertions.assertEquals("Сумма", driver.findElement(mainPage.internetSum).getAttribute("placeholder"));
-
-        // Рассрочка
-        wait.until(ExpectedConditions.elementToBeClickable(mainPage.selectHeader)).click();
-        wait.until(ExpectedConditions.elementToBeClickable(mainPage.selectItem_3)).click();
+        Assertions.assertEquals("E-mail для отправки чека", driver.findElement(mainPage.eMailField).getAttribute("placeholder"));
+        mainPage.paymentOptionsSelect(wait, 2);
         Assertions.assertEquals("Номер счета на 44", driver.findElement(mainPage.scoreInstalment).getAttribute("placeholder"));
         Assertions.assertEquals("Сумма", driver.findElement(mainPage.sumInstalment).getAttribute("placeholder"));
-
-        // Задолженность
-        wait.until(ExpectedConditions.elementToBeClickable(mainPage.selectHeader)).click();
-        wait.until(ExpectedConditions.elementToBeClickable(mainPage.selectItem_4)).click();
+        Assertions.assertEquals("E-mail для отправки чека", driver.findElement(mainPage.eMailField).getAttribute("placeholder"));
+        mainPage.paymentOptionsSelect(wait, 3);
         Assertions.assertEquals("Номер счета на 2073", driver.findElement(mainPage.scoreArrears).getAttribute("placeholder"));
         Assertions.assertEquals("Сумма", driver.findElement(mainPage.sumArrears).getAttribute("placeholder"));
+        Assertions.assertEquals("E-mail для отправки чека", driver.findElement(mainPage.eMailField).getAttribute("placeholder"));
     }
 
     @Test
     @DisplayName("Проверка окна подтверждения платежа")
     public void bePaidFrameTest() {
+        mainPage.paymentOptionsSelect(new WebDriverWait(driver, Duration.ofSeconds(3)), 0);
         Double sum = 1.0;
         String sumDouble = new DecimalFormat("#0.00").format(sum);
         String phone = "297777777";
         mainPage.payWrapperData(phone, sum);
-
         driver.findElement(mainPage.continueBtn).click();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-
-//        wait.until(ExpectedConditions.visibilityOfElementLocated(bePaidApp.bePaidFrame)).isEnabled();
         wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.className("bepaid-iframe")));
-//        driver.switchTo().frame(driver.findElement(By.className("bepaid-iframe")));
         wait.until(ExpectedConditions.visibilityOfElementLocated(bePaidApp.payDescriptionText));
-        Assertions.assertEquals("Оплата: Услуги связи Номер:375" + phone, driver.findElement(bePaidApp.payDescriptionText).getText()); //номер оплаты
-        Assertions.assertEquals(sumDouble.replace(",",".")+" BYN",driver.findElement(bePaidApp.payDescriptionCost).getText()); //сумма сверху фрейма
-        Assertions.assertEquals("Оплатить "+sumDouble.replace(",",".")+" BYN",driver.findElement(bePaidApp.payBtn).getText()); //кнопка оплатить
-        Assertions.assertEquals("Номер карты",driver.findElement(bePaidApp.cardNumber).getText()); //номер карты
-        Assertions.assertEquals("Срок действия",driver.findElement(bePaidApp.validityPeriod).getText()); //срок действия
-        Assertions.assertEquals("Имя держателя (как на карте)",driver.findElement(bePaidApp.cardholderName).getText());//фамилия
-        Assertions.assertEquals("CVC",driver.findElement(bePaidApp.cvc).getText()); //CVC
-
-        Assertions.assertTrue(bePaidApp.payPartnersLogo()); //логотипы платёжных систем
+        Assertions.assertEquals("Оплата: Услуги связи Номер:375" + phone, mainPage.getText(bePaidApp.payDescriptionText));
+        Assertions.assertEquals(sumDouble.replace(",", ".") + " BYN", mainPage.getText(bePaidApp.payDescriptionCost));
+        Assertions.assertEquals("Оплатить " + sumDouble.replace(",", ".") + " BYN", mainPage.getText(bePaidApp.payBtn));
+        Assertions.assertEquals("Номер карты", mainPage.getText(bePaidApp.cardNumber));
+        Assertions.assertEquals("Срок действия", mainPage.getText(bePaidApp.validityPeriod));
+        Assertions.assertEquals("Имя держателя (как на карте)", mainPage.getText(bePaidApp.cardholderName));
+        Assertions.assertEquals("CVC", mainPage.getText(bePaidApp.cvc));
+        Assertions.assertTrue(bePaidApp.payPartnersLogo());
     }
 
     @AfterEach

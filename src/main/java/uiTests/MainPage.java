@@ -3,6 +3,11 @@ package uiTests;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainPage {
     public By payWrapperName = By.xpath("//*[@class='pay__wrapper']/h2");
@@ -22,10 +27,8 @@ public class MainPage {
     public By sumInstalment = By.id("instalment-sum");
     public By scoreArrears = By.id("score-arrears");
     public By sumArrears = By.id("arrears-sum");
+    public By eMailField = By.className("email");
     public By selectHeader = By.className("select__header");
-    public By selectList = By.className("select__list");
-
-    // можно попробывать list
     public By selectItem_1 = By.xpath("//*[@class='select__list']/li[1]");
     public By selectItem_2 = By.xpath("//*[@class='select__list']/li[2]");
     public By selectItem_3 = By.xpath("//*[@class='select__list']/li[3]");
@@ -33,27 +36,29 @@ public class MainPage {
 
     private WebDriver driver;
 
-    public MainPage(WebDriver driver){
+    public MainPage(WebDriver driver) {
         this.driver = driver;
     }
 
-    public String getPayWrapperName() {
-        return driver.findElement(payWrapperName).getText();
+    public void paymentOptionsSelect(WebDriverWait wait, int selectorIndex) {
+        List<WebElement> selectList = new ArrayList<>();
+        selectList.add(driver.findElement(selectItem_1));
+        selectList.add(driver.findElement(selectItem_2));
+        selectList.add(driver.findElement(selectItem_3));
+        selectList.add(driver.findElement(selectItem_4));
+        wait.until(ExpectedConditions.elementToBeClickable(selectHeader)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(selectList.get(selectorIndex))).click();
     }
 
-    public boolean payPartnersLogo(){
+    public boolean payPartnersLogo() {
         return !driver.findElements(visaImg).isEmpty()
-                &&!driver.findElements(verifiedByVisaImg).isEmpty()
-                &&!driver.findElements(masterCardImg).isEmpty()
-                &&!driver.findElements(masterCardSecureCodeImg).isEmpty()
-                &&!driver.findElements(belcardImg).isEmpty();
+                && !driver.findElements(verifiedByVisaImg).isEmpty()
+                && !driver.findElements(masterCardImg).isEmpty()
+                && !driver.findElements(masterCardSecureCodeImg).isEmpty()
+                && !driver.findElements(belcardImg).isEmpty();
     }
 
-    public WebElement serviceInfo(){
-        return driver.findElement(serviceInfo);
-    }
-
-    public void payWrapperData(String phone, Double sum){
+    public void payWrapperData(String phone, Double sum) {
         WebElement phoneField = driver.findElement(connectPhone);
         WebElement sumField = driver.findElement(connectSum);
         phoneField.click();
@@ -62,7 +67,7 @@ public class MainPage {
         sumField.sendKeys(sum.toString());
     }
 
-//    public String getText(WebElement webElement){
-//        return webElement.getText();
-//    }
+    public String getText(By locator) {
+        return driver.findElement(locator).getText();
+    }
 }
