@@ -1,32 +1,64 @@
 import io.github.bonigarcia.wdm.WebDriverManager;
+//import io.qameta.allure.Attachment;
+//import io.qameta.allure.Description;
+import io.qameta.allure.*;
+import io.qameta.allure.selenide.LogType;
+import junit.framework.TestListener;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import uiTests.BePaidApp;
 import uiTests.CookieFrame;
 import uiTests.MainPage;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.text.DecimalFormat;
 import java.time.Duration;
 
+@Epic("Allure")
+@Feature("Главная страница")
 public class SeleniumPracticeTest {
 
-    static WebDriver driver;
+    static EventFiringWebDriver driver;
 
     MainPage mainPage;
     BePaidApp bePaidApp;
+
+//    @Attachment(value = "Screenshot", type = "image/png")
+//    public byte[] takeScreenshot(WebDriver driver) {
+//        return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+//    }
+//
+//    public static void savePageScreenshot(WebDriver driver, Path path) {
+//        File screenshotFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+//        try {
+//            Files.copy(screenshotFile.toPath(), path, StandardCopyOption.REPLACE_EXISTING);
+//        } catch (IOException e) {
+//            System.out.println("Can't copy the screenshot file:" + e.getMessage());
+//        }
+//    }
 
     @BeforeAll
     static void driverSetup() {
         WebDriverManager.chromedriver().setup();
     }
 
+    @Step("Открываем главную страницу")
     @BeforeEach
     void browserSetup() {
-        driver = new ChromeDriver();
+//        driver = new ChromeDriver();
+        driver = new EventFiringWebDriver(new ChromeDriver());
         driver.get("http://mts.by");
         mainPage = new MainPage(driver);
         bePaidApp = new BePaidApp(driver);
@@ -35,10 +67,14 @@ public class SeleniumPracticeTest {
     }
 
     @Test
+    @Story("Проверка блока пополнения")
+    @Description("Тест проверяет название блока 'Онлайн пополнение без комиссии'")
+    @Severity(SeverityLevel.NORMAL)
     @DisplayName("Проверка названия блока «Онлайн пополнение без комиссии»")
     public void titleBlockTest() {
-//        Assertions.assertEquals("Онлайн пополнение\n" + "без комиссии", mainPage.getPayWrapperName());
         Assertions.assertEquals("Онлайн пополнение\n" + "без комиссии", mainPage.getText(mainPage.payWrapperName));
+//        Allure.step("Онлайн пополнение");
+        Allure.addAttachment("Логи по первому тесту", String.valueOf(driver.manage().logs().get(String.valueOf(LogType.BROWSER)).getAll()));
     }
 
     @Test
