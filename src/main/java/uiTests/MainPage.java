@@ -3,6 +3,7 @@ package uiTests;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -69,5 +70,10 @@ public class MainPage {
 
     public String getText(By locator) {
         return driver.findElement(locator).getText();
+    }
+
+    public void moveTo(By locator) {
+        Actions action = new Actions(driver);
+        action.moveToElement(driver.findElement(locator)).build().perform();
     }
 }

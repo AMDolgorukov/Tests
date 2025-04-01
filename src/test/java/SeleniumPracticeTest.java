@@ -1,53 +1,37 @@
 import io.github.bonigarcia.wdm.WebDriverManager;
-//import io.qameta.allure.Attachment;
-//import io.qameta.allure.Description;
 import io.qameta.allure.*;
 import io.qameta.allure.selenide.LogType;
-import junit.framework.TestListener;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import uiTests.BePaidApp;
 import uiTests.CookieFrame;
 import uiTests.MainPage;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.io.ByteArrayInputStream;
 import java.text.DecimalFormat;
 import java.time.Duration;
 
-@Epic("Allure")
-@Feature("Главная страница")
+@Epic("Aston AQA тестирование сайта MTS.BY")
+@Feature("Набор тестов для задания по Selenium")
 public class SeleniumPracticeTest {
 
-    static EventFiringWebDriver driver;
+    static ChromeDriver driver;
 
     MainPage mainPage;
     BePaidApp bePaidApp;
 
-//    @Attachment(value = "Screenshot", type = "image/png")
-//    public byte[] takeScreenshot(WebDriver driver) {
-//        return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-//    }
-//
-//    public static void savePageScreenshot(WebDriver driver, Path path) {
-//        File screenshotFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-//        try {
-//            Files.copy(screenshotFile.toPath(), path, StandardCopyOption.REPLACE_EXISTING);
-//        } catch (IOException e) {
-//            System.out.println("Can't copy the screenshot file:" + e.getMessage());
-//        }
-//    }
+    @Attachment(value = "Screenshot", type = "image/png")
+    public static byte[] takeScreenshot(WebDriver driver) {
+        byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+        Allure.addAttachment("Screenshot", "image/png", new ByteArrayInputStream(screenshot), "png");
+        return screenshot;
+    }
 
     @BeforeAll
     static void driverSetup() {
@@ -57,8 +41,7 @@ public class SeleniumPracticeTest {
     @Step("Открываем главную страницу")
     @BeforeEach
     void browserSetup() {
-//        driver = new ChromeDriver();
-        driver = new EventFiringWebDriver(new ChromeDriver());
+        driver = new ChromeDriver();
         driver.get("http://mts.by");
         mainPage = new MainPage(driver);
         bePaidApp = new BePaidApp(driver);
@@ -67,36 +50,54 @@ public class SeleniumPracticeTest {
     }
 
     @Test
-    @Story("Проверка блока пополнения")
+    @Step("Проверка блока пополнения")
+    @Story("Пользователь ищет блок пополнения на главной странице")
     @Description("Тест проверяет название блока 'Онлайн пополнение без комиссии'")
     @Severity(SeverityLevel.NORMAL)
     @DisplayName("Проверка названия блока «Онлайн пополнение без комиссии»")
     public void titleBlockTest() {
+        mainPage.moveTo(mainPage.continueBtn);
         Assertions.assertEquals("Онлайн пополнение\n" + "без комиссии", mainPage.getText(mainPage.payWrapperName));
-//        Allure.step("Онлайн пополнение");
-        Allure.addAttachment("Логи по первому тесту", String.valueOf(driver.manage().logs().get(String.valueOf(LogType.BROWSER)).getAll()));
+        Allure.addAttachment("Проверка названия блока «Онлайн пополнение без комиссии»", String.valueOf(driver.manage().logs().get(String.valueOf(LogType.BROWSER)).getAll()));
     }
 
     @Test
+    @Step("Проверка лого платежек")
+    @Story("Пользователь видит возможные варианты платежный систем")
+    @Description("Тест проверяет наличие логотипов платежных систем")
+    @Severity(SeverityLevel.NORMAL)
     @DisplayName("Проверка наличия логотипов платежных систем")
     public void payPartnersLogoTest() {
+        mainPage.moveTo(mainPage.continueBtn);
         Assertions.assertTrue(mainPage.payPartnersLogo());
+        Allure.addAttachment("Проверка наличия логотипов платежных систем", String.valueOf(driver.manage().logs().get(String.valueOf(LogType.BROWSER)).getAll()));
     }
 
     @Test
+    @Step("Ссылка «Подробнее о сервисе»")
+    @Story("Пользователь переходит по ссылке с тайтлом «Подробнее о сервисе»")
+    @Description("Тест проверяет наличие ссылки «Подробнее о сервисе», её кликабельность и конечный URL")
+    @Severity(SeverityLevel.NORMAL)
     @DisplayName("Проверка работы ссылки «Подробнее о сервисе»")
     public void serviceInfoLinkTest() {
+        mainPage.moveTo(mainPage.continueBtn);
         Assertions.assertAll(
                 () -> Assertions.assertEquals("Подробнее о сервисе", mainPage.getText(mainPage.serviceInfo)),
                 () -> Assertions.assertEquals("https://www.mts.by/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/", driver.findElement(mainPage.serviceInfo).getAttribute("href")),
                 driver.findElement(mainPage.serviceInfo)::click,
                 () -> Assertions.assertTrue(new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.urlContains("https://www.mts.by/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/")))
         );
+        Allure.addAttachment("Проверка работы ссылки «Подробнее о сервисе»", String.valueOf(driver.manage().logs().get(String.valueOf(LogType.BROWSER)).getAll()));
     }
 
     @Test
+    @Step("Кнопка «Продолжить»")
+    @Story("Пользователь заполняет форму платежа и кликает кнопку «Продолжить»")
+    @Description("Тест проверяет наличие кнопки «Продолжить», её кликабельность и появившейся фрейм")
+    @Severity(SeverityLevel.NORMAL)
     @DisplayName("Проверка работы кнопки «Продолжить»")
     public void continueBtnTest() {
+        mainPage.moveTo(mainPage.continueBtn);
         mainPage.paymentOptionsSelect(new WebDriverWait(driver, Duration.ofSeconds(3)), 0);
         mainPage.payWrapperData("297777777", 1.0);
         Assertions.assertAll(
@@ -104,11 +105,17 @@ public class SeleniumPracticeTest {
                 driver.findElement(mainPage.continueBtn)::click,
                 () -> Assertions.assertTrue(new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.visibilityOfElementLocated(bePaidApp.bePaidFrame)).isEnabled())
         );
+        Allure.addAttachment("Проверка работы кнопки «Продолжить»", String.valueOf(driver.manage().logs().get(String.valueOf(LogType.BROWSER)).getAll()));
     }
 
     @Test
+    @Step("Селект меню услуг для оплаты онлайн")
+    @Story("Пользователь выбирает из выпадающего списка услугу для оплаты онлайн")
+    @Description("Тест проверяет наличие всех видов услуг в селекторе, а так же соответсвующие описания в полях на форме оплаты для каждой из услуг")
+    @Severity(SeverityLevel.NORMAL)
     @DisplayName("Проверка списка услуг для оплаты онлайн")
     public void selectListTest() {
+        mainPage.moveTo(mainPage.continueBtn);
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         mainPage.paymentOptionsSelect(wait, 0);
         Assertions.assertEquals("Номер телефона", driver.findElement(mainPage.connectPhone).getAttribute("placeholder"));
@@ -126,9 +133,14 @@ public class SeleniumPracticeTest {
         Assertions.assertEquals("Номер счета на 2073", driver.findElement(mainPage.scoreArrears).getAttribute("placeholder"));
         Assertions.assertEquals("Сумма", driver.findElement(mainPage.sumArrears).getAttribute("placeholder"));
         Assertions.assertEquals("E-mail для отправки чека", driver.findElement(mainPage.eMailField).getAttribute("placeholder"));
+        Allure.addAttachment("Проверка списка услуг для оплаты онлайн", String.valueOf(driver.manage().logs().get(String.valueOf(LogType.BROWSER)).getAll()));
     }
 
     @Test
+    @Step("Фрейм подтверждения платежа")
+    @Story("Пользователь выбирает услугу для оплаты, заполняет форму платежа и нажимает кнопку «Продолжить»")
+    @Description("Тест проверяет подписи всех полей на фрейме подтверждения оплаты")
+    @Severity(SeverityLevel.NORMAL)
     @DisplayName("Проверка окна подтверждения платежа")
     public void bePaidFrameTest() {
         mainPage.paymentOptionsSelect(new WebDriverWait(driver, Duration.ofSeconds(3)), 0);
@@ -148,10 +160,12 @@ public class SeleniumPracticeTest {
         Assertions.assertEquals("Имя держателя (как на карте)", mainPage.getText(bePaidApp.cardholderName));
         Assertions.assertEquals("CVC", mainPage.getText(bePaidApp.cvc));
         Assertions.assertTrue(bePaidApp.payPartnersLogo());
+        Allure.addAttachment("Проверка окна подтверждения платежа", String.valueOf(driver.manage().logs().get(String.valueOf(LogType.BROWSER)).getAll()));
     }
 
     @AfterEach
     void driverClose() {
+        takeScreenshot(driver);
         driver.close();
     }
 }
