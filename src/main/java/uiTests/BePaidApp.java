@@ -12,11 +12,11 @@ public class BePaidApp {
     public By validityPeriod = By.xpath("//*[@class='ng-tns-c2312288139-4 ng-star-inserted']");
     public By cardholderName = By.xpath("//*[@class='ng-tns-c2312288139-3 ng-star-inserted']");
     public By cvc = By.xpath("//*[@class='ng-tns-c2312288139-5 ng-star-inserted']");
-    public By visaImg = By.xpath("//*[@class='cards-brands ng-tns-c2312288139-1']/div/img[1]");
-    public By masterCardImg = By.xpath("//*[@class='cards-brands ng-tns-c2312288139-1']/div/img[2]");
-    public By belcardImg = By.xpath("//*[@class='cards-brands ng-tns-c2312288139-1']/div/img[3]");
-    public By maestroImg = By.xpath("//*[@class='cards-brands ng-tns-c2312288139-1']/div/div/img[1]");
-    public By mirImg = By.xpath("//*[@class='cards-brands ng-tns-c2312288139-1']/div/div/img[2]");
+    public By visaImg = By.xpath("//img[@src='assets/images/payment-icons/card-types/visa-system.svg']");
+    public By masterCardImg = By.xpath("//img[@src='assets/images/payment-icons/card-types/mastercard-system.svg']");
+    public By belcardImg = By.xpath("//img[@src='assets/images/payment-icons/card-types/belkart-system.svg']");
+    public By maestroImg = By.xpath("//img[@src='assets/images/payment-icons/card-types/maestro-system.svg']");
+    public By mirImg = By.xpath("//img[@src='assets/images/payment-icons/card-types/mir-system-ru.svg']");
 
     private WebDriver driver;
 

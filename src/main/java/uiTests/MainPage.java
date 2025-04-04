@@ -30,10 +30,10 @@ public class MainPage {
     public By sumArrears = By.id("arrears-sum");
     public By eMailField = By.className("email");
     public By selectHeader = By.className("select__header");
-    public By selectItem_1 = By.xpath("//*[@class='select__list']/li[1]");
-    public By selectItem_2 = By.xpath("//*[@class='select__list']/li[2]");
-    public By selectItem_3 = By.xpath("//*[@class='select__list']/li[3]");
-    public By selectItem_4 = By.xpath("//*[@class='select__list']/li[4]");
+    public By selectItem_1 = By.xpath("//ul[@class='select__list']//li[contains(@class, 'select__item')][.//p[text()='Услуги связи']]");
+    public By selectItem_2 = By.xpath("//ul[@class='select__list']//li[contains(@class, 'select__item')][.//p[text()='Домашний интернет']]");
+    public By selectItem_3 = By.xpath("//ul[@class='select__list']//li[contains(@class, 'select__item')][.//p[text()='Рассрочка']]");
+    public By selectItem_4 = By.xpath("//ul[@class='select__list']//li[contains(@class, 'select__item')][.//p[text()='Задолженность']]");
 
     private WebDriver driver;
 

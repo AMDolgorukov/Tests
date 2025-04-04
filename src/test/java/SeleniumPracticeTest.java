@@ -2,10 +2,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import io.qameta.allure.*;
 import io.qameta.allure.selenide.LogType;
 import org.junit.jupiter.api.*;
-import org.openqa.selenium.By;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -13,30 +10,16 @@ import uiTests.BePaidApp;
 import uiTests.CookieFrame;
 import uiTests.MainPage;
 
-import java.io.ByteArrayInputStream;
 import java.text.DecimalFormat;
 import java.time.Duration;
 
 @Epic("Aston AQA тестирование сайта MTS.BY")
 @Feature("Набор тестов для задания по Selenium")
-public class SeleniumPracticeTest {
-
-    static ChromeDriver driver;
+public class SeleniumPracticeTest extends BaseTest{
 
     MainPage mainPage;
     BePaidApp bePaidApp;
-
-    @Attachment(value = "Screenshot", type = "image/png")
-    public static byte[] takeScreenshot(WebDriver driver) {
-        byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-        Allure.addAttachment("Screenshot", "image/png", new ByteArrayInputStream(screenshot), "png");
-        return screenshot;
-    }
-
-    @BeforeAll
-    static void driverSetup() {
-        WebDriverManager.chromedriver().setup();
-    }
+    CookieFrame cookieFrame;
 
     @Step("Открываем главную страницу")
     @BeforeEach
@@ -45,7 +28,7 @@ public class SeleniumPracticeTest {
         driver.get("http://mts.by");
         mainPage = new MainPage(driver);
         bePaidApp = new BePaidApp(driver);
-        CookieFrame cookieFrame = new CookieFrame(driver);
+        cookieFrame = new CookieFrame(driver);
         cookieFrame.cookieAgree();
     }
 
@@ -80,6 +63,7 @@ public class SeleniumPracticeTest {
     @Severity(SeverityLevel.NORMAL)
     @DisplayName("Проверка работы ссылки «Подробнее о сервисе»")
     public void serviceInfoLinkTest() {
+        driver.manage().window().maximize();
         mainPage.moveTo(mainPage.continueBtn);
         Assertions.assertAll(
                 () -> Assertions.assertEquals("Подробнее о сервисе", mainPage.getText(mainPage.serviceInfo)),
@@ -115,24 +99,27 @@ public class SeleniumPracticeTest {
     @Severity(SeverityLevel.NORMAL)
     @DisplayName("Проверка списка услуг для оплаты онлайн")
     public void selectListTest() {
+        WebElement emailField = driver.findElement(mainPage.eMailField);
         mainPage.moveTo(mainPage.continueBtn);
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
-        mainPage.paymentOptionsSelect(wait, 0);
-        Assertions.assertEquals("Номер телефона", driver.findElement(mainPage.connectPhone).getAttribute("placeholder"));
-        Assertions.assertEquals("Сумма", driver.findElement(mainPage.connectSum).getAttribute("placeholder"));
-        Assertions.assertEquals("E-mail для отправки чека", driver.findElement(mainPage.eMailField).getAttribute("placeholder"));
-        mainPage.paymentOptionsSelect(wait, 1);
-        Assertions.assertEquals("Номер абонента", driver.findElement(mainPage.internetPhone).getAttribute("placeholder"));
-        Assertions.assertEquals("Сумма", driver.findElement(mainPage.internetSum).getAttribute("placeholder"));
-        Assertions.assertEquals("E-mail для отправки чека", driver.findElement(mainPage.eMailField).getAttribute("placeholder"));
-        mainPage.paymentOptionsSelect(wait, 2);
-        Assertions.assertEquals("Номер счета на 44", driver.findElement(mainPage.scoreInstalment).getAttribute("placeholder"));
-        Assertions.assertEquals("Сумма", driver.findElement(mainPage.sumInstalment).getAttribute("placeholder"));
-        Assertions.assertEquals("E-mail для отправки чека", driver.findElement(mainPage.eMailField).getAttribute("placeholder"));
-        mainPage.paymentOptionsSelect(wait, 3);
-        Assertions.assertEquals("Номер счета на 2073", driver.findElement(mainPage.scoreArrears).getAttribute("placeholder"));
-        Assertions.assertEquals("Сумма", driver.findElement(mainPage.sumArrears).getAttribute("placeholder"));
-        Assertions.assertEquals("E-mail для отправки чека", driver.findElement(mainPage.eMailField).getAttribute("placeholder"));
+        Assertions.assertAll(
+                () -> mainPage.paymentOptionsSelect(wait, 0),
+                () -> Assertions.assertEquals("Номер телефона", driver.findElement(mainPage.connectPhone).getAttribute("placeholder")),
+                () -> Assertions.assertEquals("Сумма", driver.findElement(mainPage.connectSum).getAttribute("placeholder")),
+                () -> Assertions.assertEquals("E-mail для отправки чека", emailField.getAttribute("placeholder")),
+                () -> mainPage.paymentOptionsSelect(wait, 1),
+                () -> Assertions.assertEquals("Номер абонента", driver.findElement(mainPage.internetPhone).getAttribute("placeholder")),
+                () -> Assertions.assertEquals("Сумма", driver.findElement(mainPage.internetSum).getAttribute("placeholder")),
+                () -> Assertions.assertEquals("E-mail для отправки чека", emailField.getAttribute("placeholder")),
+                () -> mainPage.paymentOptionsSelect(wait, 2),
+                () -> Assertions.assertEquals("Номер счета на 44", driver.findElement(mainPage.scoreInstalment).getAttribute("placeholder")),
+                () -> Assertions.assertEquals("Сумма", driver.findElement(mainPage.sumInstalment).getAttribute("placeholder")),
+                () -> Assertions.assertEquals("E-mail для отправки чека", emailField.getAttribute("placeholder")),
+                () -> mainPage.paymentOptionsSelect(wait, 3),
+                () -> Assertions.assertEquals("Номер счета на 2073", driver.findElement(mainPage.scoreArrears).getAttribute("placeholder")),
+                () -> Assertions.assertEquals("Сумма", driver.findElement(mainPage.sumArrears).getAttribute("placeholder")),
+                () -> Assertions.assertEquals("E-mail для отправки чека", emailField.getAttribute("placeholder"))
+        );
         Allure.addAttachment("Проверка списка услуг для оплаты онлайн", String.valueOf(driver.manage().logs().get(String.valueOf(LogType.BROWSER)).getAll()));
     }
 
@@ -161,11 +148,5 @@ public class SeleniumPracticeTest {
         Assertions.assertEquals("CVC", mainPage.getText(bePaidApp.cvc));
         Assertions.assertTrue(bePaidApp.payPartnersLogo());
         Allure.addAttachment("Проверка окна подтверждения платежа", String.valueOf(driver.manage().logs().get(String.valueOf(LogType.BROWSER)).getAll()));
-    }
-
-    @AfterEach
-    void driverClose() {
-        takeScreenshot(driver);
-        driver.close();
     }
 }
